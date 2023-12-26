@@ -32,3 +32,13 @@ export class LoginUserDto {
     @Validate(PasswordValidator, { message: 'Password is not Strong enough' })
     password: string;
 }
+
+export class VerifyOtpDto {
+    @ApiProperty()
+    @IsNotEmpty()
+    otp: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    otpRef: string;
+}

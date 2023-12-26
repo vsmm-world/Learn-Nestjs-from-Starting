@@ -20,6 +20,11 @@ export class UserController {
     return this.userService.login(loginUserDto);
   }
 
+  @Post('verify-otp')
+  validateOTP(@Body() verifyOtpDto) {
+    return this.userService.validateOTP(verifyOtpDto);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Get()
