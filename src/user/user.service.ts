@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as otpGenerator from 'otp-generator';
 import * as bcrypt from 'bcrypt';
+import { env } from 'process';
 
 @Injectable()
 export class UserService {
@@ -88,9 +89,9 @@ export class UserService {
             };
 
             
-            // const client = new postmark.ServerClient(
-            //   '1cc34f10-11f8-41be-bca6-35258cdeaa43',
-            // );
+            const client = new postmark.ServerClient(
+              env.POSTMARK_SERVER_TOKEN,
+            );
             return await client
               .sendEmail(mail)
               .then((res) => {
