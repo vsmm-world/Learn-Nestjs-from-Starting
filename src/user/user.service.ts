@@ -16,9 +16,9 @@ export class UserService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
-    private client: postmark.ServerClient,
+    // private client: postmark.ServerClient,
   ) {
-    this.client = new postmark.ServerClient('');
+    // this.client = new postmark.ServerClient('2adfac99-b974-45bb-abce-9277c0e4bbb2');
   }
 
   login(loginUserDto: LoginUserDto) {
@@ -37,9 +37,23 @@ export class UserService {
               alphabets: false,
             });
 
-            const tempOTP = await this.prisma.tempOTP
+            const session = await this.prisma.userSession.create({
+              data: {
+                token: 'xyz',
+                user: { connect: { id: user.id } },
+              },
+            });
+
+            await this.prisma.tempOTP
               .create({
-                data: { otp, otpRef, user: { connect: { id: user.id } } },
+                data: {
+                  otp,
+                  otpRef,
+                  UserSession: { connect: { id: session.id } },
+                },
+              })
+              .then((res) => {
+                console.log(res);
               })
               .catch((err) => {
                 return {
@@ -48,16 +62,36 @@ export class UserService {
                 };
               });
 
+              
             const mail = {
-              From: 'vsmmworld@gmail.com',
-              To: user.email,
-              Subject: 'Test',
-              TextBody: 'Hello from Postmark!',
-              html: `<h1>Hi ${user.name}</h1><p>Your OTP is ${otp}</p>
-                <p>OTP Ref is ${otpRef}</p>`,
+              TemplateId: 34277244,
+
+            TemplateModel: {
+              otp: otp,
+              otpRef: otpRef,
+            },
+            From: 'rushi@syscreations.com',
+            To: user.email,
+            Subject: 'Test',
+            TextBody: 'Hello from Postmark!',
+            HtmlBody:
+              `<html>` +
+              `<body>` +
+              `<h1>` +
+              otp +
+              `</h1>` +
+              `<p>` +
+              otpRef +
+              `</p>` +
+              `</body>` +
+              `</html>`,
             };
 
-            return await this.client
+            
+            const client = new postmark.ServerClient(
+              '1cc34f10-11f8-41be-bca6-35258cdeaa43',
+            );
+            return await client
               .sendEmail(mail)
               .then((res) => {
                 return {
@@ -68,15 +102,9 @@ export class UserService {
               .catch((err) => {
                 return {
                   statusCode: HttpStatus.BAD_REQUEST,
-                  message: "Couldn't send OTP",
+                  message: err.message,
                 };
               });
-
-            // const token = this.generatejwtToken(user.id);
-            // const accessToken = await this.prisma.userSession.create({
-            //   // data: { token, user: { connect: { id: user.id } } },
-            // });
-            // return accessToken;
           } else {
             return {
               statusCode: HttpStatus.BAD_REQUEST,
@@ -189,22 +217,40 @@ export class UserService {
   }
   async validateOTP(verifyOtpDto: VerifyOtpDto) {
     const { otp, otpRef } = verifyOtpDto;
-    const tempOTP = await this.prisma.tempOTP
+    return await this.prisma.tempOTP
       .findFirst({
-        where: { otp },
+        where: { otpRef },
       })
-      .then((res) => {
-        if (res.otpRef === otpRef) {
+      .then(async (res) => {
+        if (res.otp == otp) {
+          const session = await this.prisma.userSession.findFirst({
+            where: { id: res.UserSessionId },
+          });
+          const user = await this.prisma.user.findFirst({
+            where: { id: session.userId },
+          });
+          const token = this.generatejwtToken(user.id);
+          const accesToken = await this.prisma.userSession.update({
+            where: { id: session.id },
+            data: { token },
+          });
+
           return {
-            statusCode: 200,
-            message: `OTP is validated successfully`,
+            statusCode: HttpStatus.OK,
+            message: 'OTP is valid',
+            accesToken,
+          };
+        } else {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'OTP is invalid',
           };
         }
       })
       .catch((err) => {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't validate OTP",
+          message: 'OTP is invalid',
         };
       });
   }

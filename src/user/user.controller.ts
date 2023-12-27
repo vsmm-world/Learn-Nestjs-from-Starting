@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
+import { CreateUserDto, LoginUserDto ,VerifyOtpDto} from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { log } from 'console';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -21,7 +20,7 @@ export class UserController {
   }
 
   @Post('verify-otp')
-  validateOTP(@Body() verifyOtpDto) {
+  validateOTP(@Body() verifyOtpDto: VerifyOtpDto) {
     return this.userService.validateOTP(verifyOtpDto);
   }
 

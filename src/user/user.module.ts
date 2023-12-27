@@ -15,10 +15,10 @@ import * as postmark from 'postmark';
       secret: 'jwtSecretData.secret',
       signOptions: { expiresIn: '7d' }, // e.g. 7d, 24h
     }),
-   postmark.ServerClient,
+    
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],
-  exports: [JwtStrategy,postmark.ServerClient],
+  exports: [JwtStrategy],
 })
 export class UserModule {}
