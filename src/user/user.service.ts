@@ -88,9 +88,9 @@ export class UserService {
             };
 
             
-            const client = new postmark.ServerClient(
-              '1cc34f10-11f8-41be-bca6-35258cdeaa43',
-            );
+            // const client = new postmark.ServerClient(
+            //   '1cc34f10-11f8-41be-bca6-35258cdeaa43',
+            // );
             return await client
               .sendEmail(mail)
               .then((res) => {
