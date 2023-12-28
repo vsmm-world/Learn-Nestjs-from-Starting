@@ -22,16 +22,16 @@ export class TimetableController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.timetableService.findOne(+id);
+    return this.timetableService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTimetableDto: UpdateTimetableDto) {
-    return this.timetableService.update(+id, updateTimetableDto);
+    return this.timetableService.update(id, updateTimetableDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.timetableService.remove(+id);
+    return this.timetableService.remove(id);
   }
 }
