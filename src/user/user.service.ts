@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as otpGenerator from 'otp-generator';
 import * as bcrypt from 'bcrypt';
 import { env } from 'process';
+import e from 'express';
 
 let objid;
 
@@ -21,40 +22,41 @@ export class UserService {
     private prisma: PrismaService,
   ) {}
 
+  test(id : string) {
+    return this.prisma.userSession.findFirst({
+      where: { token: id , expiresAt: { gte: new Date(Date.now()) } },
+    });
+  }
+
+
   async whoAmI(id: string) {
     return await this.prisma.userSession
       .findFirst({
-        where: { token: id , expiresAt: { gte: new Date(Date.now()) }},
+        where: { id },
       })
-      .then((res) => {
-        const session = res;
-       return this.prisma.user
-          .findFirst({
-            where: { id: res.userId },
-          })
-          .then((user) => {
-            return {
-              statusCode: HttpStatus.OK,
-              message: 'User found',
-              user,
-              session,
-            };
-          });
+      .then(async (res) => {
+        const user = await this.prisma.user.findFirst({
+          where: { id: res.userId },
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'User found',
+          user,
+        };
       })
       .catch((err) => {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't fetch user",
+          message: "Couldn't find user",
         };
       });
-    
   }
 
   async logout(id: string) {
     return await this.prisma.userSession
       .update({
         where: { id },
-        data: { expiresAt: new Date(Date.now())},
+        data: { expiresAt: new Date(Date.now()) },
       })
       .then((res) => {
         return {
@@ -279,7 +281,7 @@ export class UserService {
           const token = this.generatejwtToken(user.id);
           const accesToken = await this.prisma.userSession.update({
             where: { id: session.id },
-            data: { token , expiresAt: new Date(Date.now() + 86400000) },
+            data: { token, expiresAt: new Date(Date.now() + 86400000) },
           });
 
           return {

@@ -68,4 +68,9 @@ export class UserController {
   whoAmI(@Param('id') id: string) {
     return this.userService.whoAmI(id);
   }
+
+  @Get('test/:id')
+  test(@Param('id') id: string) {
+    return this.userService.test(id);
+  } 
 }
