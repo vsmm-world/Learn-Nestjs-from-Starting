@@ -19,7 +19,7 @@ model user {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   UserSession UserSession[]
-  // tempOTP   tempOTP[]
+  teacher     teacher[]
 }
 
 model UserSession {
@@ -28,6 +28,7 @@ model UserSession {
   userId    String    @db.ObjectId
   token     String
   createdAt DateTime  @default(now())
+  expiresAt DateTime?
   tempOTP   tempOTP[]
 }
 
@@ -39,4 +40,27 @@ model tempOTP {
   otpRef        String
   createdAt     DateTime    @default(now())
   expiresAt     DateTime?
+}
+
+model teacher {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String
+  password        String
+  isDeleted       Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            user        @relation(fields: [favoriteStudent], references: [id])
+  favoriteStudent String      @db.ObjectId
+  timeTable       timeTable[]
+}
+
+model timeTable {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  teacher   teacher  @relation(fields: [teacherId], references: [id])
+  teacherId String   @db.ObjectId
+  day       String
+  time      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

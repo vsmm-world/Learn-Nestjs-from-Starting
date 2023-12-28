@@ -51,4 +51,21 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
+
+ @Get('resend-otp/:id')
+  resendOtp(@Param('id') id: string) {
+    return this.userService.resendOTP(id);
+  }
+
+  @Get('logout/:id')
+  logout(@Param('id') id: string) {
+    return this.userService.logout(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @Get('whoami/:id')
+  whoAmI(@Param('id') id: string) {
+    return this.userService.whoAmI(id);
+  }
 }
