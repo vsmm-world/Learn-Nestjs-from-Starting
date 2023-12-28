@@ -11,7 +11,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as otpGenerator from 'otp-generator';
 import * as bcrypt from 'bcrypt';
 import { env } from 'process';
-import e from 'express';
 
 let objid;
 
@@ -32,9 +31,10 @@ export class UserService {
   async whoAmI(id: string) {
     return await this.prisma.userSession
       .findFirst({
-        where: { id },
+        where: { token: id , expiresAt: { gte: new Date(Date.now()) }},
       })
       .then(async (res) => {
+        const session= res;
         const user = await this.prisma.user.findFirst({
           where: { id: res.userId },
         });
@@ -42,6 +42,7 @@ export class UserService {
           statusCode: HttpStatus.OK,
           message: 'User found',
           user,
+          session 
         };
       })
       .catch((err) => {
@@ -187,9 +188,13 @@ export class UserService {
         message: 'Email already exists',
       };
     }
+
+    const classId= createUserDto.classID;
     return this.prisma.user
       .create({
-        data: { ...createUserDto, password: Hash },
+        data: { ...createUserDto, classId,password: Hash },
+      }).then(async (user) => {
+        console.log(user);
       })
       .catch((err) => {
         return {
