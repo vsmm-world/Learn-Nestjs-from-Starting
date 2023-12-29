@@ -6,9 +6,11 @@ import { ClassModule } from './class/class.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { TimetableModule } from './timetable/timetable.module';
+import { SubjectsModule } from './subjects/subjects.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, ClassModule, TeacherModule, AttendanceModule, TimetableModule],
+  imports: [PrismaModule, UserModule, ClassModule, TeacherModule, AttendanceModule, TimetableModule, SubjectsModule, TaskModule],
   exports: [PrismaService],
   providers: [PrismaService],
 

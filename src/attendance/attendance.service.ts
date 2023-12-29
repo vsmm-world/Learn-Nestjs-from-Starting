@@ -14,7 +14,7 @@ export class AttendanceService {
           user: { connect: { id: createAttendanceDto.studentid } },
           School_class: { connect: { id: createAttendanceDto.classid } },
           present: createAttendanceDto.present,
-          day: createAttendanceDto.day,
+          Date: createAttendanceDto.date,
         },
       })
       .then((res) => {
@@ -27,7 +27,7 @@ export class AttendanceService {
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error creating attendance',
+          message: err.message,
         };
       });
   }
@@ -87,7 +87,7 @@ export class AttendanceService {
           user: { connect: { id: updateAttendanceDto.studentid } },
           School_class: { connect: { id: updateAttendanceDto.classid } },
           present: updateAttendanceDto.present,
-          day: updateAttendanceDto.day,
+          Date: updateAttendanceDto.date,
         },
       })
       .then((res) => {
@@ -101,7 +101,7 @@ export class AttendanceService {
         return {
           statusCode: 400,
           message: 'Error creating attendance',
-          data: err,
+         
         };
       });
   }

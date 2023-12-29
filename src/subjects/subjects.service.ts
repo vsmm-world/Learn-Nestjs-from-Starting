@@ -1,40 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { CreateSubjectDto } from './dto/create-subject.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class TeacherService {
+export class SubjectsService {
   constructor(private prisma: PrismaService) {}
-
-  async create(createTeacherDto: CreateTeacherDto) {
-    return await this.prisma.teacher
+  async create(createSubjectDto: CreateSubjectDto) {
+    return await this.prisma.subjects
       .create({
         data: {
-          name: createTeacherDto.teacherName,
-          email: createTeacherDto.teacherEmail,
-          user: { connect: { id: createTeacherDto.favoriteStudent } },
-          subjects: { connect: { id: createTeacherDto.subject } },
+          name: createSubjectDto.subjectName,
         },
       })
       .then((res) => {
         return {
           statusCode: 200,
-          message: 'Teacher created successfully',
+          message: 'Subject created successfully',
           data: res,
         };
       })
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error creating teacher',
-          data: err,
+          message: 'Error creating subject',
         };
       });
   }
 
   async findAll() {
-    return await this.prisma.teacher
+    return await this.prisma.subjects
       .findMany({
         where: {
           isDeleted: false,
@@ -43,21 +38,20 @@ export class TeacherService {
       .then((res) => {
         return {
           statusCode: 200,
-          message: 'Teacher fetched successfully',
+          message: 'Subject fetched successfully',
           data: res,
         };
       })
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error fetching teacher',
-          data: err,
+          message: 'Error fetching subject',
         };
       });
   }
 
   async findOne(id: string) {
-    return await this.prisma.teacher
+    return await this.prisma.subjects
       .findFirst({
         where: {
           id: id,
@@ -67,51 +61,50 @@ export class TeacherService {
       .then((res) => {
         return {
           statusCode: 200,
-          message: 'Teacher fetched successfully',
+          message: 'Subject fetched successfully',
           data: res,
         };
       })
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error fetching teacher',
-          data: err,
+          message: 'Error fetching subject',
         };
       });
   }
 
-  async update(id: string, updateTeacherDto: UpdateTeacherDto) {
-    return await this.prisma.teacher
+  async update(id: string, updateSubjectDto: UpdateSubjectDto) {
+    return await this.prisma.subjects
       .update({
         where: {
           id: id,
+          isDeleted: false,
         },
         data: {
-          name: updateTeacherDto.teacherName,
-          email: updateTeacherDto.teacherEmail,
-          user: { connect: { id: updateTeacherDto.favoriteStudent } },
+          name: updateSubjectDto.subjectName,
         },
       })
       .then((res) => {
         return {
           statusCode: 200,
-          message: 'Teacher updated successfully',
+          message: 'Subject updated successfully',
           data: res,
         };
       })
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error updating teacher',
+          message: 'Error updating subject',
         };
       });
   }
 
   async remove(id: string) {
-    return await this.prisma.teacher
+    return await this.prisma.subjects
       .update({
         where: {
           id: id,
+          isDeleted: false,
         },
         data: {
           isDeleted: true,
@@ -120,15 +113,14 @@ export class TeacherService {
       .then((res) => {
         return {
           statusCode: 200,
-          message: 'Teacher deleted successfully',
+          message: 'Subject deleted successfully',
           data: res,
         };
       })
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error deleting teacher',
-          data: err,
+          message: 'Error deleting subject',
         };
       });
   }

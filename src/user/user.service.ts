@@ -21,20 +21,19 @@ export class UserService {
     private prisma: PrismaService,
   ) {}
 
-  test(id : string) {
+  test(id: string) {
     return this.prisma.userSession.findFirst({
-      where: { token: id , expiresAt: { gte: new Date(Date.now()) } },
+      where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
     });
   }
-
 
   async whoAmI(id: string) {
     return await this.prisma.userSession
       .findFirst({
-        where: { token: id , expiresAt: { gte: new Date(Date.now()) }},
+        where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
       })
       .then(async (res) => {
-        const session= res;
+        const session = res;
         const user = await this.prisma.user.findFirst({
           where: { id: res.userId },
         });
@@ -42,7 +41,7 @@ export class UserService {
           statusCode: HttpStatus.OK,
           message: 'User found',
           user,
-          session 
+          session,
         };
       })
       .catch((err) => {
@@ -189,12 +188,22 @@ export class UserService {
       };
     }
 
-    const classId= createUserDto.classID;
+    const classId = createUserDto.classID;
     return this.prisma.user
       .create({
-        data: { ...createUserDto, classId,password: Hash },
-      }).then(async (user) => {
-        console.log(user);
+        data: {
+          name: createUserDto.name,
+          email: createUserDto.email,
+          password: Hash,
+          School_class: { connect: { id: classId } },
+        },
+      })
+      .then(async (user) => {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'User created successfully',
+            user,
+        }
       })
       .catch((err) => {
         return {

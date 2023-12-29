@@ -16,6 +16,6 @@ export class CreateAttendanceDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    day: string;
+    date: string;
     
 }

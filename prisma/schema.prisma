@@ -54,6 +54,8 @@ model teacher {
   updatedAt       DateTime    @updatedAt
   user            user        @relation(fields: [favoriteStudent], references: [id])
   favoriteStudent String      @db.ObjectId
+  subjects        subjects    @relation(fields: [subjectId], references: [id])
+  subjectId       String      @db.ObjectId
   timeTable       timeTable[]
 }
 
@@ -76,7 +78,7 @@ model attendance {
   user         user         @relation(fields: [studentId], references: [id])
   studentId    String       @db.ObjectId
   present      Boolean
-  day          String
+  Date         String
   isDeleted    Boolean      @default(false)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -91,4 +93,13 @@ model School_class {
   attendance attendance[]
   user       user[]
   timeTable  timeTable[]
+}
+
+model subjects {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  teacher   teacher[]
 }

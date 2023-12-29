@@ -21,6 +21,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsNotEmpty()
     classID: string;
+    
 
 }
 

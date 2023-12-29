@@ -13,4 +13,8 @@ export class CreateTeacherDto {
     @ApiProperty()
     @IsNotEmpty()
     favoriteStudent: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    subject: string;
 }
