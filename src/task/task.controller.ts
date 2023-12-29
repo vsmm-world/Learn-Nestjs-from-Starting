@@ -1,7 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { getTeacherDTO, getAttandanceDTO } from './dto/create-task.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('task')
@@ -9,31 +16,53 @@ import { ApiTags } from '@nestjs/swagger';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(createTaskDto);
+  @Get('gtfavStud-teachID/:id')
+  getFavoriteStudentByTecherID(@Param('id') id: string) {
+    return this.taskService.getFavoriteStudentByTecherID(id);
+  }
+  @Get('gtClass-studID/:id')
+  getClassByStudentID(@Param('id') id: string) {
+    return this.taskService.getClassByStudentID(id);
+  }
+  @Get('gtTimeTable-techId/:id')
+  getTimeTableByTeacherID(@Param('id') id: string) {
+    return this.taskService.getTimeTableByTeacherID(id);
+  }
+  @Get('gtTimeTable-Day/:id')
+  getTimeTableByDay(@Param('id') id: string) {
+    return this.taskService.getTimeTableByDay(id);
   }
 
-  
-
-  @Get()
-  findAll() {
-    return this.taskService.findAll();
+  @Get('gtTimetable-classID/:id')
+  getTimeTableByClassID(@Param('id') id: string) {
+    return this.taskService.getTimeTableByClassID(id);
+  }
+  @Get('gtAttand-ClassID/:id')
+  getAttanceByClassID(@Param('id') id: string) {
+    return this.taskService.getAttanceByClassID(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(id);
+  @Post('gtAttandanceBy-cls-date')
+  getAttandanceByDTO(@Body() getAttandanceDTO: getAttandanceDTO) {
+    return this.taskService.getAttandanceByDTO(getAttandanceDTO);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(id, updateTaskDto);
+  @Get('gtAttnd-date/:id')
+  getAttandanceByDate(@Param('id') id: string) {
+    return this.taskService.getAttandanceByDate(id);
+  }
+  @Post('gtTeacherBy-cls-day')
+  getTeacherByDTO(@Body() getTeacherDTO: getTeacherDTO) {
+    return this.taskService.getTeacherByDTO(getTeacherDTO);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskService.remove(id);
+  @Get('gtwhichTeach-studId/:id')
+  getWhichTeacherByStudentID(@Param('id') id: string) {
+    return this.taskService.getWhichTeacherByStudentID(id);
+  }
+
+  @Get('gtTech-SubID/:id')
+  getTeacherBySubjectID(@Param('id') id: string) {
+    return this.taskService.getTeacherBySubjectID(id);
   }
 }
-

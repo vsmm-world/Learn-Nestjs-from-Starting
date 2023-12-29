@@ -1,28 +1,265 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { getTeacherDTO, getAttandanceDTO } from './dto/create-task.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TaskService {
-  constructor(private prisma:PrismaService){}
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(private prisma: PrismaService) {}
+
+  async getTeacherBySubjectID(id: string) {
+    return await this.prisma.teacher
+      .findMany({
+        where: { subjectId: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Teacher data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: err.message,
+        };
+      });
+  }
+  async getWhichTeacherByStudentID(id: string) {
+    return await this.prisma.teacher
+      .findMany({
+        where: { favoriteStudent: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Teacher data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'You are not favorite student of any teacher',
+        };
+      });
+  }
+  async getTimeTableByClassID(id: string) {
+    return await this.prisma.timeTable
+      .findMany({
+        where: { classId: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'TimeTable data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No TimeTable data found',
+        };
+      });
+  }
+  async getAttandanceByDate(id: string) {
+    return await this.prisma.attendance
+      .findMany({
+        where: { Date: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Attandance data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Attandance data found',
+        };
+      });
+  }
+  async getAttandanceByDTO(getAttandanceDTO: getAttandanceDTO) {
+    return await this.prisma.attendance
+      .findMany({
+        where: {
+          classId: getAttandanceDTO.ClassId,
+          Date: getAttandanceDTO.Date,
+        },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Attandance data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Attandance data found',
+        };
+      });
+  }
+  async getTeacherByDTO(getTeacherDTO: getTeacherDTO) {
+    return await this.prisma.timeTable
+      .findFirst({
+        where: {
+          classId: getTeacherDTO.ClassId,
+          day: getTeacherDTO.Day,
+        },
+      })
+      .then(async (data) => {
+        return await this.prisma.teacher
+          .findFirst({
+            where: {
+              id: data.teacherId,
+            },
+          })
+          .then((data) => {
+            return {
+              statusCode: HttpStatus.OK,
+              message: 'Teacher data',
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'No Teacher data found',
+            };
+          });
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Teacher data found',
+        };
+      });
+  }
+  async getAttanceByClassID(id: string) {
+    return await this.prisma.attendance
+      .findMany({
+        where: { classId: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Attandance data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Attandance data found',
+        };
+      });
+  }
+  async getTimeTableByDay(id: string) {
+    return await this.prisma.timeTable
+      .findMany({
+        where: { day: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'TimeTable data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No TimeTable data found',
+        };
+      });
+  }
+  async getTimeTableByTeacherID(id: string) {
+    return await this.prisma.timeTable
+      .findMany({
+        where: { teacherId: id },
+      })
+      .then((data) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'TimeTable data',
+          data: data,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No TimeTable data found',
+        };
+      });
   }
 
-  findAll() {
-    return `This action returns all task`;
-  }
+  //REMAINING -- rv.notes
 
-  findOne(id: string) {
-    return `This action returns a #${id} task`;
+  async getClassByStudentID(id: string) {
+    return await this.prisma.user
+      .findFirst({
+        where: { id: id },
+      })
+      .then(async (data) => {
+        return await this.prisma.school_class
+          .findFirst({
+            where: { id: data.classId },
+          })
+          .then((data) => {
+            return {
+              statusCode: HttpStatus.OK,
+              message: 'Class data',
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'No Class data found',
+            };
+          });
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Class data found',
+        };
+      });
   }
-
-  update(id: string, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} task`;
+  async getFavoriteStudentByTecherID(id: string) {
+    return await this.prisma.teacher
+      .findFirst({
+        where: { favoriteStudent: id },
+      })
+      .then(async (data) => {
+        return await this.prisma.user
+          .findFirst({
+            where: { id: data.favoriteStudent },
+          })
+          .then((data) => {
+            return {
+              statusCode: HttpStatus.OK,
+              message: 'Favorite Student data',
+              data: data,
+            };
+          })
+          .catch((err) => {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'No Favorite Student data found',
+            };
+          });
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'No Favorite Student data found',
+        };
+      });
   }
 }

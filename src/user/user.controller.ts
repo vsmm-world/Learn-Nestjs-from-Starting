@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards ,Request} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginUserDto ,VerifyOtpDto} from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -66,9 +66,10 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('whoami/:id')
-  whoAmI(@Param('id') id: string) {
-    return this.userService.whoAmI(id);
+  @Get('whoami')
+  whoAmI(@Request() req):string {
+    const user= req.user;
+    return user ;
   }
 
   @Get('test/:id')
