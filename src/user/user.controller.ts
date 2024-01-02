@@ -82,8 +82,8 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Get('whoami')
-  whoami(@Request() req){
-    const user = req.user;
+ async whoami(@Request() req){
+    const user = await req.user;
     return user;
   }
   
