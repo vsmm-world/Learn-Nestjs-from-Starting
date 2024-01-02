@@ -16,6 +16,7 @@ export class AttendanceService {
           present: createAttendanceDto.present,
           Date: createAttendanceDto.date,
         },
+        include: { School_class: true, user: true },
       })
       .then((res) => {
         return {
@@ -38,6 +39,7 @@ export class AttendanceService {
         where: {
           isDeleted: false,
         },
+        include: { School_class: true, user: true },
       })
       .then((res) => {
         return {
@@ -61,6 +63,7 @@ export class AttendanceService {
           id: id,
           isDeleted: false,
         },
+        include: { School_class: true, user: true },
       })
       .then((res) => {
         return {
@@ -89,6 +92,7 @@ export class AttendanceService {
           present: updateAttendanceDto.present,
           Date: updateAttendanceDto.date,
         },
+        include: { School_class: true, user: true },
       })
       .then((res) => {
         return {
@@ -101,7 +105,6 @@ export class AttendanceService {
         return {
           statusCode: 400,
           message: 'Error creating attendance',
-         
         };
       });
   }
@@ -115,6 +118,7 @@ export class AttendanceService {
         data: {
           isDeleted: true,
         },
+        include: { School_class: true, user: true },
       })
       .then((res) => {
         return {

@@ -12,7 +12,7 @@ import { getTeacherDTO, getAttandanceDTO } from './dto/create-task.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('task')
-@ApiTags('All Assigned 9 Api-Endpoint')
+@ApiTags('All Assigned 9 +2 extra Api-Endpoint')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 

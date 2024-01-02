@@ -16,6 +16,7 @@ export class TeacherService {
           user: { connect: { id: createTeacherDto.favoriteStudent } },
           subjects: { connect: { id: createTeacherDto.subject } },
         },
+        include: { user: true, subjects: true },
       })
       .then((res) => {
         return {
@@ -39,6 +40,7 @@ export class TeacherService {
         where: {
           isDeleted: false,
         },
+        include: { user: true, subjects: true },
       })
       .then((res) => {
         return {
@@ -63,6 +65,7 @@ export class TeacherService {
           id: id,
           isDeleted: false,
         },
+        include: { user: true, subjects: true },
       })
       .then((res) => {
         return {
@@ -91,6 +94,7 @@ export class TeacherService {
           email: updateTeacherDto.teacherEmail,
           user: { connect: { id: updateTeacherDto.favoriteStudent } },
         },
+        include: { user: true, subjects: true },
       })
       .then((res) => {
         return {
@@ -116,6 +120,7 @@ export class TeacherService {
         data: {
           isDeleted: true,
         },
+        include: { user: true, subjects: true },
       })
       .then((res) => {
         return {

@@ -197,6 +197,7 @@ export class UserService {
           password: Hash,
           School_class: { connect: { id: classId } },
         },
+        include: { School_class: true },
       })
       .then(async (user) => {
         return {
@@ -217,6 +218,7 @@ export class UserService {
     return this.prisma.user
       .findMany({
         where: { isDeleted: false },
+        include: { School_class: true },
       })
       .catch((err) => {
         return {
@@ -230,6 +232,7 @@ export class UserService {
     return this.prisma.user
       .findUnique({
         where: { id, isDeleted: false },
+        include: { School_class: true },
       })
       .catch((err) => {
         return {
@@ -244,6 +247,7 @@ export class UserService {
       .update({
         where: { id, isDeleted: false },
         data: { ...updateUserDto },
+        include: { School_class: true },
       })
       .then((user) => {
         return {
@@ -264,6 +268,7 @@ export class UserService {
       .update({
         where: { id },
         data: { isDeleted: true },
+        include: { School_class: true },
       })
       .then((user) => {
         return {

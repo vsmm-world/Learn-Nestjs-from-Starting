@@ -8,8 +8,9 @@ export class TaskService {
 
   async getTeacherBySubjectID(id: string) {
     return await this.prisma.teacher
-      .findMany({
+      .findFirst({
         where: { subjectId: id },
+        include: { subjects: true },
       })
       .then((data) => {
         return {
@@ -27,8 +28,9 @@ export class TaskService {
   }
   async getWhichTeacherByStudentID(id: string) {
     return await this.prisma.teacher
-      .findMany({
+      .findFirst({
         where: { favoriteStudent: id },
+        include: { user: true },
       })
       .then((data) => {
         return {
@@ -48,8 +50,9 @@ export class TaskService {
     return await this.prisma.timeTable
       .findMany({
         where: { classId: id },
+        include: { teacher: true,School_class:true },
       })
-      .then((data) => {
+      .then(async (data) => {
         return {
           statusCode: HttpStatus.OK,
           message: 'TimeTable data',
@@ -67,6 +70,7 @@ export class TaskService {
     return await this.prisma.attendance
       .findMany({
         where: { Date: id },
+        include: { School_class: true, user: true },
       })
       .then((data) => {
         return {
@@ -88,7 +92,8 @@ export class TaskService {
         where: {
           classId: getAttandanceDTO.ClassId,
           Date: getAttandanceDTO.Date,
-        },
+        },include: { School_class: true, user: true },
+
       })
       .then((data) => {
         return {
@@ -118,6 +123,7 @@ export class TaskService {
             where: {
               id: data.teacherId,
             },
+            include: { user: true ,subjects:true},
           })
           .then((data) => {
             return {
@@ -144,6 +150,7 @@ export class TaskService {
     return await this.prisma.attendance
       .findMany({
         where: { classId: id },
+        include: { School_class: true, user: true },
       })
       .then((data) => {
         return {
@@ -163,6 +170,7 @@ export class TaskService {
     return await this.prisma.timeTable
       .findMany({
         where: { day: id },
+        include: { teacher: true,School_class:true },
       })
       .then((data) => {
         return {
@@ -182,6 +190,7 @@ export class TaskService {
     return await this.prisma.timeTable
       .findMany({
         where: { teacherId: id },
+        include: { teacher: true,School_class:true },
       })
       .then((data) => {
         return {
@@ -234,12 +243,14 @@ export class TaskService {
   async getFavoriteStudentByTecherID(id: string) {
     return await this.prisma.teacher
       .findFirst({
-        where: { favoriteStudent: id },
+        where: { id: id },
+        include: { user: true,subjects:true },
       })
       .then(async (data) => {
         return await this.prisma.user
           .findFirst({
             where: { id: data.favoriteStudent },
+            include: { School_class: true },
           })
           .then((data) => {
             return {

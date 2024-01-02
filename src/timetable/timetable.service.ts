@@ -14,7 +14,7 @@ export class TimetableService {
         teacher:{connect:{id: createTimetableDto.teacherId,}},
         School_class:{connect:{id: createTimetableDto.classId,}}
       },
-    }).then((res) => {
+      include: { teacher: true ,School_class:true},    }).then((res) => {
       return {
         statusCode: 200,
         message: 'Timetable created successfully',
@@ -34,6 +34,7 @@ export class TimetableService {
       where: {
         isDeleted: false,
       },
+      include: { teacher: true,School_class:true },
     }).then((res) => {
       return {
         statusCode: 200,
@@ -53,6 +54,7 @@ export class TimetableService {
       where: {
         id: id,isDeleted:false
       },
+      include: { teacher: true,School_class:true },
     }).then((res) => {
       return {
         statusCode: 200,
@@ -77,6 +79,7 @@ export class TimetableService {
         teacher:{connect:{id: updateTimetableDto.teacherId,}},
         School_class:{connect:{id: updateTimetableDto.classId,}}
       },
+      include: { teacher: true,School_class:true },
     }).then((res) => {
       return {
         statusCode: 200,
@@ -99,6 +102,7 @@ export class TimetableService {
       data: {
         isDeleted: true,
       },
+      include: { teacher: true,School_class:true },
     }).then((res) => {
       return {
         statusCode: 200,
