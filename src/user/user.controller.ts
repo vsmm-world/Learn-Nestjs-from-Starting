@@ -48,12 +48,12 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth()
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth()
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.userService.findOne(id);
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
@@ -82,9 +82,7 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Get('whoami')
- async whoami(@Request() req){
-    const user = await req.user;
-    return user;
+  async whoami(@Request() req) {
+    return req.user;
   }
-  
 }

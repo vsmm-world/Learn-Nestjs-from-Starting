@@ -16,9 +16,9 @@ import { ApiTags } from '@nestjs/swagger';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Get('gtfavStud-teachID/:id')
-  getFavoriteStudentByTecherID(@Param('id') id: string) {
-    return this.taskService.getFavoriteStudentByTecherID(id);
+  @Get('gtfavStud-teachID/:{teacherId}')
+  getFavoriteStudentByTecherID(@Param('teacherId') teacherId: string) {
+    return this.taskService.getFavoriteStudentByTecherID(teacherId);
   }
   @Get('gtClass-studID/:id')
   getClassByStudentID(@Param('id') id: string) {

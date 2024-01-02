@@ -251,6 +251,10 @@ export class UserService {
 
   async findOne(id: string) {
     console.log(id);
+
+    if(id.length<12){
+    return id;
+    }
     return await this.prisma.user
       .findUnique({
         where: { id, isDeleted: false },

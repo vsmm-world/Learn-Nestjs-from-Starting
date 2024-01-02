@@ -240,10 +240,10 @@ export class TaskService {
         };
       });
   }
-  async getFavoriteStudentByTecherID(id: string) {
+  async getFavoriteStudentByTecherID(teacherId: string) {
     return await this.prisma.teacher
       .findFirst({
-        where: { id: id },
+        where: { id: teacherId },
         include: { user: true,subjects:true },
       })
       .then(async (data) => {
