@@ -1,10 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards ,Request} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, LoginUserDto ,VerifyOtpDto} from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  VerifyOtpDto,
+} from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-
+// import { Request } from 'express';
 
 @ApiTags('User')
 @Controller('user')
@@ -54,7 +69,7 @@ export class UserController {
     return this.userService.remove(id);
   }
 
- @Get('resend-otp/:id')
+  @Get('resend-otp/:id')
   resendOtp(@Param('id') id: string) {
     return this.userService.resendOTP(id);
   }
@@ -67,13 +82,9 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Get('whoami')
-  whoAmI(@Request() req):string {
-    const user= req.user;
-    return user ;
+  whoami(@Request() req){
+    const user = req.user;
+    return user;
   }
-
-  @Get('test/:id')
-  test(@Param('id') id: string) {
-    return this.userService.test(id);
-  } 
+  
 }

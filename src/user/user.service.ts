@@ -26,31 +26,52 @@ export class UserService {
       where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
     });
   }
+  // whoAmI(user: any) {
+  //   console.log(user);
 
-  async whoAmI(id: string) {
-    return await this.prisma.userSession
-      .findFirst({
-        where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
-      })
-      .then(async (res) => {
-        const session = res;
-        const user = await this.prisma.user.findFirst({
-          where: { id: res.userId },
-        });
-        return {
-          statusCode: HttpStatus.OK,
-          message: 'User found',
-          user,
-          session,
-        };
-      })
-      .catch((err) => {
-        return {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't find user",
-        };
-      });
-  }
+  //   return this.prisma.user.findFirst({
+  //     where: { id: user.sub },
+  //   }).then((res) => {
+  //     return {
+  //       statusCode: HttpStatus.OK,
+  //       message: 'User found',
+  //       res,
+  //     };
+  //   }
+  //   ).catch((err) => {
+  //     return {
+  //       statusCode: HttpStatus.BAD_REQUEST,
+  //       message: err.message,
+  //     };
+  //   });
+
+  // }
+
+  // async whoAmI(id: string) {
+  //   console.log(id);
+  //   return await this.prisma.userSession
+  //     .findFirst({
+  //       where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
+  //     })
+  //     .then(async (res) => {
+  //       const session = res;
+  //       const user = await this.prisma.user.findFirst({
+  //         where: { id: res.userId },
+  //       });
+  //       return {
+  //         statusCode: HttpStatus.OK,
+  //         message: 'User found',
+  //         user,
+  //         session,
+  //       };
+  //     })
+  //     .catch((err) => {
+  //       return {
+  //         statusCode: HttpStatus.BAD_REQUEST,
+  //         message: err.message,
+  //       };
+  //     });
+  // }
 
   async logout(id: string) {
     return await this.prisma.userSession
@@ -201,10 +222,10 @@ export class UserService {
       })
       .then(async (user) => {
         return {
-            statusCode: HttpStatus.OK,
-            message: 'User created successfully',
-            user,
-        }
+          statusCode: HttpStatus.OK,
+          message: 'User created successfully',
+          user,
+        };
       })
       .catch((err) => {
         return {
@@ -229,15 +250,23 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    return this.prisma.user
+    console.log(id);
+    return await this.prisma.user
       .findUnique({
         where: { id, isDeleted: false },
         include: { School_class: true },
       })
+      .then((res) => {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'User found',
+          res,
+        };
+      })
       .catch((err) => {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't fetch user",
+          message: err,
         };
       });
   }
