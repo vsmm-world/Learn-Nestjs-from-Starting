@@ -19,12 +19,12 @@ export class AuthService {
   ) {}
 
   async logout(req: any) {
+    const tk = req.headers.authorization;
+    const token = tk.split(' ')[1];
+    console.log(token);
     return await this.prisma.userSession
       .findFirst({
-        where: {
-          token: req.headers.authorization,
-          expiresAt: { gte: new Date(Date.now()) },
-        },
+        where: { token, expiresAt: { gte: new Date(Date.now()) } },
       })
       .then(async (res) => {
         return await this.prisma.userSession
@@ -137,7 +137,6 @@ export class AuthService {
   }
   async validateOTP(verifyOtpDto: VerifyOtpDto) {
     const { otp, otpRef } = verifyOtpDto;
-    console.log(otp, otpRef);
     return await this.prisma.tempOTP
       .findFirst({
         where: { otpRef, expiresAt: { gte: new Date(Date.now()) } },
