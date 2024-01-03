@@ -31,15 +31,6 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Post('login')
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.userService.login(loginUserDto);
-  }
-
-  @Post('verify-otp')
-  validateOTP(@Body() verifyOtpDto: VerifyOtpDto) {
-    return this.userService.validateOTP(verifyOtpDto);
-  }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
@@ -69,10 +60,6 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @Get('resend-otp/:id')
-  resendOtp(@Param('id') id: string) {
-    return this.userService.resendOTP(id);
-  }
 
   @Get('logout/:id')
   logout(@Param('id') id: string) {
@@ -84,5 +71,5 @@ export class UserController {
   @Get('whoami')
   async whoami(@Request() req) {
     return req.user;
-  }
+  } 
 }

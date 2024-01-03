@@ -11,18 +11,43 @@ datasource db {
 }
 
 model user {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  email        String
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  email             String
+  name              String
+  password          String
+  isDeleted         Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  UserSession       UserSession[]
+  subjectsCreated   subjects[]     @relation("createdBy")
+  subjectsUpdated   subjects[]     @relation("updatedBy")
+  ClassCreated      School_class[] @relation("createdBy")
+  ClassUpdated      School_class[] @relation("updatedBy")
+  AttendanceCreated attendance[]   @relation("createdBy")
+  AttendanceUpdated attendance[]   @relation("updatedBy")
+  StudentCreated    student[]      @relation("createdBy")
+  StudentUpdated    student[]      @relation("updatedBy")
+  TeacherCreated    teacher[]      @relation("createdBy")
+  TeacherUpdated    teacher[]      @relation("updatedBy")
+  TimeTableCreated  timeTable[]    @relation("createdBy")
+  TimeTableUpdated  timeTable[]    @relation("updatedBy")
+}
+
+model student {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   name         String
-  password     String
-  isDeleted    Boolean       @default(false)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  School_class School_class  @relation(fields: [classId], references: [id])
-  classId      String        @db.ObjectId
-  UserSession  UserSession[]
-  teacher      teacher[]
+  email        String
+  isDeleted    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  School_class School_class @relation(fields: [classId], references: [id])
+  classId      String       @db.ObjectId
   attendance   attendance[]
+  teacher      teacher[]
+  createdBy    user         @relation("createdBy", fields: [createdById], references: [id])
+  createdById  String       @db.ObjectId
+  updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById  String?      @db.ObjectId
 }
 
 model UserSession {
@@ -52,11 +77,15 @@ model teacher {
   isDeleted       Boolean     @default(false)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-  user            user        @relation(fields: [favoriteStudent], references: [id])
+  student         student     @relation(fields: [favoriteStudent], references: [id])
   favoriteStudent String      @db.ObjectId
   subjects        subjects    @relation(fields: [subjectId], references: [id])
   subjectId       String      @db.ObjectId
   timeTable       timeTable[]
+  createdBy       user        @relation("createdBy", fields: [createdById], references: [id])
+  createdById     String      @db.ObjectId
+  updatedBy       user?       @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById     String?     @db.ObjectId
 }
 
 model timeTable {
@@ -69,37 +98,53 @@ model timeTable {
   isDeleted    Boolean      @default(false)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  createdBy    user         @relation("createdBy", fields: [createdById], references: [id])
+  createdById  String       @db.ObjectId
+  updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById  String?      @db.ObjectId
 }
 
 model attendance {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
   School_class School_class @relation(fields: [classId], references: [id])
   classId      String       @db.ObjectId
-  user         user         @relation(fields: [studentId], references: [id])
-  studentId    String       @db.ObjectId
   present      Boolean
   Date         String
   isDeleted    Boolean      @default(false)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  student      student?     @relation(fields: [studentId], references: [id])
+  studentId    String       @db.ObjectId
+  createdBy    user         @relation("createdBy", fields: [createdById], references: [id])
+  createdById  String       @db.ObjectId
+  updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById  String?      @db.ObjectId
 }
 
 model School_class {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  isDeleted  Boolean      @default(false)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  attendance attendance[]
-  user       user[]
-  timeTable  timeTable[]
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  isDeleted   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attendance  attendance[]
+  timeTable   timeTable[]
+  student     student[]
+  createdBy   user         @relation("createdBy", fields: [createdById], references: [id])
+  createdById String       @db.ObjectId
+  updatedBy   user?        @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById String?      @db.ObjectId
 }
 
 model subjects {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  isDeleted Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  teacher   teacher[]
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  isDeleted   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   user      @relation("createdBy", fields: [createdById], references: [id])
+  createdById String    @db.ObjectId
+  updatedBy   user?     @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById String?   @db.ObjectId
+  teacher     teacher[]
 }
