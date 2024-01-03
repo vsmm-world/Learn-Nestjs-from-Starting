@@ -21,16 +21,22 @@ model user {
   UserSession       UserSession[]
   subjectsCreated   subjects[]     @relation("createdBy")
   subjectsUpdated   subjects[]     @relation("updatedBy")
+  subjectsDeleted   subjects[]     @relation("deletedBy")
   ClassCreated      School_class[] @relation("createdBy")
   ClassUpdated      School_class[] @relation("updatedBy")
+  ClassDeleted      School_class[] @relation("deletedBy")
   AttendanceCreated attendance[]   @relation("createdBy")
   AttendanceUpdated attendance[]   @relation("updatedBy")
+  AttendanceDeleted attendance[]   @relation("deletedBy")
   StudentCreated    student[]      @relation("createdBy")
   StudentUpdated    student[]      @relation("updatedBy")
+  StudentDeleted    student[]      @relation("deletedBy")
   TeacherCreated    teacher[]      @relation("createdBy")
   TeacherUpdated    teacher[]      @relation("updatedBy")
+  TeacherDeleted    teacher[]      @relation("deletedBy")
   TimeTableCreated  timeTable[]    @relation("createdBy")
   TimeTableUpdated  timeTable[]    @relation("updatedBy")
+  TimeTableDeleted  timeTable[]    @relation("deletedBy")
 }
 
 model student {
@@ -48,6 +54,8 @@ model student {
   createdById  String       @db.ObjectId
   updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById  String?      @db.ObjectId
+  deletedBy    user?        @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById  String?      @db.ObjectId
 }
 
 model UserSession {
@@ -86,6 +94,8 @@ model teacher {
   createdById     String      @db.ObjectId
   updatedBy       user?       @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById     String?     @db.ObjectId
+  deletedBy       user?       @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById     String?     @db.ObjectId
 }
 
 model timeTable {
@@ -102,6 +112,8 @@ model timeTable {
   createdById  String       @db.ObjectId
   updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById  String?      @db.ObjectId
+  deletedBy    user?        @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById  String?      @db.ObjectId
 }
 
 model attendance {
@@ -119,6 +131,8 @@ model attendance {
   createdById  String       @db.ObjectId
   updatedBy    user?        @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById  String?      @db.ObjectId
+  deletedBy    user?        @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById  String?      @db.ObjectId
 }
 
 model School_class {
@@ -134,6 +148,8 @@ model School_class {
   createdById String       @db.ObjectId
   updatedBy   user?        @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById String?      @db.ObjectId
+  deletedBy   user?        @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById String?      @db.ObjectId
 }
 
 model subjects {
@@ -146,5 +162,7 @@ model subjects {
   createdById String    @db.ObjectId
   updatedBy   user?     @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById String?   @db.ObjectId
+  deletedBy   user?     @relation("deletedBy", fields: [deletedById], references: [id])
+  deletedById String?   @db.ObjectId
   teacher     teacher[]
 }

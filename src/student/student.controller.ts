@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
   Request,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
