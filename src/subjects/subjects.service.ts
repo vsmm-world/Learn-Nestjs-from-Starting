@@ -6,12 +6,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class SubjectsService {
   constructor(private prisma: PrismaService) {}
-  async create(createSubjectDto: CreateSubjectDto) {
+  async create(createSubjectDto: CreateSubjectDto, req) {
     return await this.prisma.subjects
       .create({
         data: {
           name: createSubjectDto.subjectName,
+          createdBy: { connect: { id: req.user.res.id } },
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -23,7 +25,7 @@ export class SubjectsService {
       .catch((err) => {
         return {
           statusCode: 400,
-          message: 'Error creating subject',
+          message: err,
         };
       });
   }
@@ -34,6 +36,7 @@ export class SubjectsService {
         where: {
           isDeleted: false,
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -57,6 +60,7 @@ export class SubjectsService {
           id: id,
           isDeleted: false,
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -73,7 +77,7 @@ export class SubjectsService {
       });
   }
 
-  async update(id: string, updateSubjectDto: UpdateSubjectDto) {
+  async update(id: string, updateSubjectDto: UpdateSubjectDto, req) {
     return await this.prisma.subjects
       .update({
         where: {
@@ -82,7 +86,9 @@ export class SubjectsService {
         },
         data: {
           name: updateSubjectDto.subjectName,
+          updatedBy: { connect: { id: req.user.res.id } },
         },
+        include: { updatedBy: true },
       })
       .then((res) => {
         return {
@@ -99,7 +105,7 @@ export class SubjectsService {
       });
   }
 
-  async remove(id: string) {
+  async remove(id: string, req) {
     return await this.prisma.subjects
       .update({
         where: {
@@ -108,7 +114,9 @@ export class SubjectsService {
         },
         data: {
           isDeleted: true,
+          deletedBy: { connect: { id: req.user.res.id } },
         },
+        include: { deletedBy: true },
       })
       .then((res) => {
         return {

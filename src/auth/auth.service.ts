@@ -11,14 +11,48 @@ import * as otpGenerator from 'otp-generator';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-let objid;
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-  login(loginUserDto: LoginUserDto) {
+
+  async logout(req: any) {
+    return await this.prisma.userSession
+      .findFirst({
+        where: {
+          token: req.headers.authorization,
+          expiresAt: { gte: new Date(Date.now()) },
+        },
+      })
+      .then(async (res) => {
+        return await this.prisma.userSession
+          .update({
+            where: { id: res.id },
+            data: { expiresAt: new Date(Date.now()) },
+          })
+          .then((res) => {
+            return {
+              statusCode: HttpStatus.OK,
+              message: 'Logged out successfully',
+            };
+          })
+          .catch((err) => {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: "Couldn't logout",
+            };
+          });
+      })
+      .catch((err) => {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: "Couldn't logout",
+        };
+      });
+  }
+  async login(loginUserDto: LoginUserDto) {
     return this.prisma.user
       .findFirst({
         where: { email: loginUserDto.email, isDeleted: false },
@@ -33,26 +67,16 @@ export class AuthService {
               specialChars: false,
               alphabets: false,
             });
-
-            const session = await this.prisma.userSession.create({
-              data: {
-                token: 'xyz',
-                user: { connect: { id: user.id } },
-              },
-            });
-
             await this.prisma.tempOTP
               .create({
                 data: {
                   otp,
                   otpRef,
-                  UserSession: { connect: { id: session.id } },
-                  expiresAt: new Date(Date.now() + 120000),
+                  expiresAt: new Date(Date.now() + 300000),
+                  user: { connect: { id: user.id } },
                 },
               })
-              .then((res) => {
-                objid = res.id;
-              })
+              .then((res) => {})
               .catch((err) => {
                 return {
                   statusCode: HttpStatus.BAD_REQUEST,
@@ -107,23 +131,28 @@ export class AuthService {
       .catch((err) => {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't login" + err.message,
+          message: "Couldn't login",
         };
       });
   }
   async validateOTP(verifyOtpDto: VerifyOtpDto) {
     const { otp, otpRef } = verifyOtpDto;
+    console.log(otp, otpRef);
     return await this.prisma.tempOTP
       .findFirst({
         where: { otpRef, expiresAt: { gte: new Date(Date.now()) } },
       })
       .then(async (res) => {
         if (res.otp == otp) {
-          const session = await this.prisma.userSession.findFirst({
-            where: { id: res.UserSessionId },
+          const session = await this.prisma.userSession.create({
+            data: {
+              user: { connect: { id: res.userId } },
+              tempOTP: { connect: { id: res.id } },
+              token: 'xyz',
+            },
           });
           const user = await this.prisma.user.findFirst({
-            where: { id: session.userId },
+            where: { id: res.userId },
           });
           const token = this.generatejwtToken(user.id);
           const accesToken = await this.prisma.userSession.update({
@@ -146,7 +175,7 @@ export class AuthService {
       .catch((err) => {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: 'OTP is invalid or expired',
+          message: err,
         };
       });
   }
@@ -156,20 +185,14 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async resendOTP(id: string) {
-    console.log(id);
-
+  async resendOTP(otpRef: string) {
     return await this.prisma.tempOTP
       .findFirst({
-        where: { id: objid },
+        where: { otpRef, expiresAt: { gte: new Date(Date.now()) } },
       })
       .then(async (res) => {
-        const session = await this.prisma.userSession.findFirst({
-          where: { id: res.UserSessionId },
-        });
-
         const user = await this.prisma.user.findFirst({
-          where: { id: session.userId },
+          where: { id: res.userId },
         });
 
         const otp = Math.floor(100000 + Math.random() * 900000);
@@ -179,8 +202,8 @@ export class AuthService {
           alphabets: false,
         });
         await this.prisma.tempOTP.update({
-          where: { id: objid },
-          data: { otp, otpRef, expiresAt: new Date(Date.now() + 120000) },
+          where: { id: res.id },
+          data: { otp, expiresAt: new Date(Date.now() + 120000) },
         });
 
         const mail = {

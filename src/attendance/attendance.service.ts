@@ -7,16 +7,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AttendanceService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createAttendanceDto: CreateAttendanceDto) {
+  async create(createAttendanceDto: CreateAttendanceDto, req) {
     return await this.prisma.attendance
       .create({
         data: {
-          user: { connect: { id: createAttendanceDto.studentid } },
+          student: { connect: { id: createAttendanceDto.studentid } },
           School_class: { connect: { id: createAttendanceDto.classid } },
           present: createAttendanceDto.present,
           Date: createAttendanceDto.date,
+          createdBy: { connect: { id: req.user.res.id } },
         },
-        include: { School_class: true, user: true },
+        include: { School_class: true, student: true, createdBy: true },
       })
       .then((res) => {
         return {
@@ -39,7 +40,7 @@ export class AttendanceService {
         where: {
           isDeleted: false,
         },
-        include: { School_class: true, user: true },
+        include: { School_class: true, student: true, createdBy: true },
       })
       .then((res) => {
         return {
@@ -63,7 +64,7 @@ export class AttendanceService {
           id: id,
           isDeleted: false,
         },
-        include: { School_class: true, user: true },
+        include: { School_class: true, student: true, createdBy: true },
       })
       .then((res) => {
         return {
@@ -80,19 +81,20 @@ export class AttendanceService {
       });
   }
 
-  async update(id: string, updateAttendanceDto: UpdateAttendanceDto) {
+  async update(id: string, updateAttendanceDto: UpdateAttendanceDto, req) {
     return await this.prisma.attendance
       .update({
         where: {
           id: id,
         },
         data: {
-          user: { connect: { id: updateAttendanceDto.studentid } },
+          student: { connect: { id: updateAttendanceDto.studentid } },
           School_class: { connect: { id: updateAttendanceDto.classid } },
           present: updateAttendanceDto.present,
           Date: updateAttendanceDto.date,
+          updatedBy: { connect: { id: req.user.res.id } },
         },
-        include: { School_class: true, user: true },
+        include: { School_class: true, student: true, updatedBy: true },
       })
       .then((res) => {
         return {
@@ -109,7 +111,7 @@ export class AttendanceService {
       });
   }
 
-  async remove(id: string) {
+  async remove(id: string, req) {
     return await this.prisma.attendance
       .update({
         where: {
@@ -117,8 +119,9 @@ export class AttendanceService {
         },
         data: {
           isDeleted: true,
+          deletedBy: { connect: { id: req.user.res.id } },
         },
-        include: { School_class: true, user: true },
+        include: { School_class: true, student: true, deletedBy: true },
       })
       .then((res) => {
         return {

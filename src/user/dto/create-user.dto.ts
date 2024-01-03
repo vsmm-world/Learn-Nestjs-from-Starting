@@ -17,12 +17,6 @@ export class CreateUserDto {
     @IsNotEmpty()
     @Validate(PasswordValidator, { message: 'Password is not Strong enough' })
     password: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    classID: string;
-    
-
 }
 
 export class LoginUserDto {

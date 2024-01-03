@@ -7,16 +7,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class TeacherService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createTeacherDto: CreateTeacherDto) {
+  async create(createTeacherDto: CreateTeacherDto,req) {
     return await this.prisma.teacher
       .create({
         data: {
           name: createTeacherDto.teacherName,
           email: createTeacherDto.teacherEmail,
-          user: { connect: { id: createTeacherDto.favoriteStudent } },
+          student: { connect: { id: createTeacherDto.favoriteStudent } },
           subjects: { connect: { id: createTeacherDto.subject } },
+          createdBy: { connect: { id: req.user.res.id } },
         },
-        include: { user: true, subjects: true },
+        include: { student: true, subjects: true ,createdBy:true},
       })
       .then((res) => {
         return {
@@ -40,7 +41,7 @@ export class TeacherService {
         where: {
           isDeleted: false,
         },
-        include: { user: true, subjects: true },
+        include: { student: true, subjects: true,createdBy:true},
       })
       .then((res) => {
         return {
@@ -65,7 +66,7 @@ export class TeacherService {
           id: id,
           isDeleted: false,
         },
-        include: { user: true, subjects: true },
+        include: { student: true, subjects: true ,createdBy:true},
       })
       .then((res) => {
         return {
@@ -83,7 +84,7 @@ export class TeacherService {
       });
   }
 
-  async update(id: string, updateTeacherDto: UpdateTeacherDto) {
+  async update(id: string, updateTeacherDto: UpdateTeacherDto,req) {
     return await this.prisma.teacher
       .update({
         where: {
@@ -92,9 +93,11 @@ export class TeacherService {
         data: {
           name: updateTeacherDto.teacherName,
           email: updateTeacherDto.teacherEmail,
-          user: { connect: { id: updateTeacherDto.favoriteStudent } },
+          student: { connect: { id: updateTeacherDto.favoriteStudent } },
+          subjects: { connect: { id: updateTeacherDto.subject } },
+          updatedBy: { connect: { id:req.user.res.id} },
         },
-        include: { user: true, subjects: true },
+        include: { student: true, subjects: true ,updatedBy:true},
       })
       .then((res) => {
         return {
@@ -111,7 +114,7 @@ export class TeacherService {
       });
   }
 
-  async remove(id: string) {
+  async remove(id: string,req) {
     return await this.prisma.teacher
       .update({
         where: {
@@ -119,8 +122,9 @@ export class TeacherService {
         },
         data: {
           isDeleted: true,
+          deletedBy: { connect: { id: req.user.res.id } },
         },
-        include: { user: true, subjects: true },
+        include: { student: true, subjects: true , deletedBy:true },
       })
       .then((res) => {
         return {

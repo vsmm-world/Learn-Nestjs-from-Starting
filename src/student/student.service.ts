@@ -8,20 +8,17 @@ export class StudentService {
   constructor(private prisma: PrismaService) {}
 
   async create(createStudentDto: CreateStudentDto, req) {
-    const usr = await this.prisma.user.findFirst({
-      where: { id: req.user.id },
-    });
-
     return await this.prisma.student
       .create({
         data: {
-          ...createStudentDto,
+          name: createStudentDto.name,
+          email: createStudentDto.email,
           School_class: {
             connect: {
               id: createStudentDto.classID,
             },
           },
-          createdBy: { connect: { id: req.user.id } },
+          createdBy: { connect: { id: req.user.res.id } },
         },
         include: { School_class: true, createdBy: true },
       })
@@ -35,7 +32,7 @@ export class StudentService {
       .catch((err) => {
         return {
           statusCode: 400,
-          message: err.message,
+          message: err,
         };
       });
   }
@@ -44,7 +41,7 @@ export class StudentService {
     return await this.prisma.student
       .findMany({
         where: { isDeleted: false },
-        include: { School_class: true },
+        include: { School_class: true, createdBy: true },
       })
       .then((res) => {
         return {
@@ -62,18 +59,79 @@ export class StudentService {
   }
 
   async findOne(id: string) {
-    return `This action returns a #${id} student`;
+    return await this.prisma.student
+      .findFirst({
+        where: { id, isDeleted: false },
+        include: { School_class: true, createdBy: true },
+      })
+      .then((res) => {
+        return {
+          statusCode: 200,
+          message: 'Student details',
+          data: res,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: 400,
+          message: 'Student not found',
+        };
+      });
   }
 
-  async update(id: string, updateStudentDto: UpdateStudentDto , req) {
-    return await this.prisma.student.update({
-      where: { id },
-      data: { ...updateStudentDto, updatedBy: { connect: { id: req.user.id } } },
-      include: { School_class: true ,updatedBy:true},
-    });
+  async update(id: string, updateStudentDto: UpdateStudentDto, req) {
+    return await this.prisma.student
+      .update({
+        where: { id },
+        data: {
+          name: updateStudentDto.name,
+          email: updateStudentDto.email,
+          School_class: {
+            connect: {
+              id: updateStudentDto.classID,
+            },
+          },
+          updatedBy: { connect: { id: req.user.res.id } },
+        },
+        include: { School_class: true, updatedBy: true },
+      })
+      .then((res) => {
+        return {
+          statusCode: 200,
+          message: 'Student details updated successfully',
+          data: res,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: 400,
+          message: 'Student not found',
+        };
+      });
   }
 
-  async remove(id: string) {
-    return `This action removes a #${id} student`;
+  async remove(id: string, req) {
+    return await this.prisma.student
+      .update({
+        where: { id },
+        data: {
+          isDeleted: true,
+          deletedBy: { connect: { id: req.user.res.id } },
+        },
+        include: { School_class: true, deletedBy: true },
+      })
+      .then((res) => {
+        return {
+          statusCode: 200,
+          message: 'Student deleted successfully',
+          data: res,
+        };
+      })
+      .catch((err) => {
+        return {
+          statusCode: 400,
+          message: 'Student not found',
+        };
+      });
   }
 }

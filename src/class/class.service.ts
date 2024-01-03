@@ -7,12 +7,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ClassService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createClassDto: CreateClassDto) {
+  async create(createClassDto: CreateClassDto, req) {
     return await this.prisma.school_class
       .create({
         data: {
           name: createClassDto.className,
+          createdBy: { connect: { id: req.user.res.id } },
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -36,6 +38,7 @@ export class ClassService {
         where: {
           isDeleted: false,
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -57,8 +60,10 @@ export class ClassService {
     return await this.prisma.school_class
       .findFirst({
         where: {
-          id: id,isDeleted:false
+          id: id,
+          isDeleted: false,
         },
+        include: { createdBy: true },
       })
       .then((res) => {
         return {
@@ -76,13 +81,15 @@ export class ClassService {
       });
   }
 
-  async update(id: string, updateClassDto: UpdateClassDto) {
+  async update(id: string, updateClassDto: UpdateClassDto, req) {
     return await this.prisma.school_class
       .update({
-        where: { id: id ,isDeleted:false},
+        where: { id: id, isDeleted: false },
         data: {
           name: updateClassDto.className,
+          updatedBy: { connect: { id: req.user.res.id } },
         },
+        include: { updatedBy: true },
       })
       .then((res) => {
         return {
@@ -100,13 +107,15 @@ export class ClassService {
       });
   }
 
-  async remove(id: string) {
+  async remove(id: string, req) {
     return await this.prisma.school_class
       .update({
         where: { id: id },
         data: {
           isDeleted: true,
+          deletedBy: { connect: { id: req.user.res.id } },
         },
+        include: { deletedBy: true },
       })
       .then((res) => {
         return {

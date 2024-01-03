@@ -13,8 +13,9 @@ import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Student')
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
@@ -22,9 +23,8 @@ export class StudentController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Post()
-  create(@Request() req ,@Body() createStudentDto: CreateStudentDto) {
-
-    return this.studentService.create(createStudentDto,req);
+  create(@Request() req, @Body() createStudentDto: CreateStudentDto) {
+    return this.studentService.create(createStudentDto, req);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -44,13 +44,17 @@ export class StudentController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Patch(':id')
-  update(@Request() req,@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentService.update(id, updateStudentDto,req);
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateStudentDto: UpdateStudentDto,
+  ) {
+    return this.studentService.update(id, updateStudentDto, req);
   }
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentService.remove(id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.studentService.remove(id, req);
   }
 }
