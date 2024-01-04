@@ -26,27 +26,6 @@ export class UserService {
       where: { token: id, expiresAt: { gte: new Date(Date.now()) } },
     });
   }
-
-  async logout(id: string) {
-    return await this.prisma.userSession
-      .update({
-        where: { id },
-        data: { expiresAt: new Date(Date.now()) },
-      })
-      .then((res) => {
-        return {
-          statusCode: HttpStatus.OK,
-          message: 'Logged out successfully',
-        };
-      })
-      .catch((err) => {
-        return {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: "Couldn't logout",
-        };
-      });
-  }
-
   async create(createUserDto: CreateUserDto) {
     const { password } = createUserDto;
     const Hash = await bcrypt.hash(password, 10);
@@ -97,7 +76,6 @@ export class UserService {
   }
 
   async findOne(id: string) {
-
     return await this.prisma.user
       .findUnique({
         where: { id, isDeleted: false },

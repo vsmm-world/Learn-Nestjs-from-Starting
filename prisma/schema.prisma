@@ -18,7 +18,8 @@ model user {
   isDeleted         Boolean        @default(false)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
-  UserSession       UserSession[]
+  sessions          UserSession?   @relation(fields: [sessionId], references: [id])
+  sessionId         String?        @db.ObjectId
   subjectsCreated   subjects[]     @relation("createdBy")
   subjectsUpdated   subjects[]     @relation("updatedBy")
   subjectsDeleted   subjects[]     @relation("deletedBy")
@@ -61,24 +62,20 @@ model student {
 
 model UserSession {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  user      user      @relation(fields: [userId], references: [id])
-  userId    String    @db.ObjectId
   token     String
   createdAt DateTime  @default(now())
   expiresAt DateTime?
-  tempOTP   tempOTP   @relation(fields: [tempOTPId], references: [id])
-  tempOTPId String    @db.ObjectId
+  user      user[]
 }
 
 model tempOTP {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  otp         Int
-  otpRef      String
-  createdAt   DateTime      @default(now())
-  expiresAt   DateTime?
-  user        user?         @relation(fields: [userId], references: [id])
-  userId      String?       @db.ObjectId
-  UserSession UserSession[]
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  otp       Int
+  otpRef    String
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  user      user?     @relation(fields: [userId], references: [id])
+  userId    String?   @db.ObjectId
 }
 
 model teacher {

@@ -143,13 +143,12 @@ export class AuthService {
         if (res.otp == otp) {
           const session = await this.prisma.userSession.create({
             data: {
-              user: { connect: { id: res.userId } },
-              tempOTP: { connect: { id: res.id } },
               token: 'xyz',
             },
           });
-          const user = await this.prisma.user.findFirst({
+          const user = await this.prisma.user.update({
             where: { id: res.userId },
+            data: { sessions: { connect: { id: session.id } } },
           });
           const token = this.generatejwtToken(user.id);
           const accesToken = await this.prisma.userSession.update({
