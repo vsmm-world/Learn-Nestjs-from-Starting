@@ -67,7 +67,7 @@ export class TaskController {
   }
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtAttnd-date/:{date}')
+  @Get('gtAttnd-date/:date')
   getAttandanceByDate(@Param('date') id: string) {
     return this.taskService.getAttandanceByDate(id);
   }
