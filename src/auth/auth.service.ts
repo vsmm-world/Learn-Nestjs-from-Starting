@@ -90,16 +90,15 @@ export class AuthService {
               },
               From: 'rushi@syscreations.com',
               To: user.email,
-              Subject: 'Your OTP for Verification',
-              TemplateVariables: {
-                otp: otp,
-              },
-              TextBody: `${otp}`,
-              HtmlBody: `${otp} ${otpRef}`,
+              // Subject: 'Your OTP for Verification',
+              // TemplateVariables: {
+              //   otp: otp,
+              // },
+              // TextBody: `${otp}`,
             };
             const client = new postmark.ServerClient(env.POST_MARK_API_KEY);
             return await client
-              .sendEmail(mail)
+              .sendEmailWithTemplate(mail)
               .then((res) => {
                 return {
                   statusCode: HttpStatus.OK,

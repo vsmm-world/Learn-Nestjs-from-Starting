@@ -32,7 +32,7 @@ export class AuthController {
   validateOTP(@Body() verifyOtpDto: VerifyOtpDto) {
     return this.authService.validateOTP(verifyOtpDto);
   }
-  @Post('resend-otp/:{otpRef}')
+  @Post('resend-otp/:otpRef')
   resendOtp(@Param('otpRef') otpRef: string) {
     return this.authService.resendOTP(otpRef);
   }

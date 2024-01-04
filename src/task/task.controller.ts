@@ -20,42 +20,42 @@ export class TaskController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtfavStud-teachID/:{teacherId}')
+  @Get('gtfavStud-teachID/:teacherId')
   getFavoriteStudentByTecherID(@Param('teacherId') teacherId: string) {
     return this.taskService.getFavoriteStudentByTecherID(teacherId);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtClass-studID/:{studentId}')
+  @Get('gtClass-studID/:studentId')
   getClassByStudentID(@Param('studentId') id: string) {
     return this.taskService.getClassByStudentID(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtTimeTable-techId/:{teacherId}')
+  @Get('gtTimeTable-techId/:teacherId')
   getTimeTableByTeacherID(@Param('teacherId') id: string) {
     return this.taskService.getTimeTableByTeacherID(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtTimeTable-Day/:{Day}')
+  @Get('gtTimeTable-Day/:Day')
   getTimeTableByDay(@Param('Day') id: string) {
     return this.taskService.getTimeTableByDay(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtTimetable-classID/:{classId}')
-  getTimeTableByClassID(@Param('ClassId') id: string) {
+  @Get('gtTimetable-classID/:classId')
+  getTimeTableByClassID(@Param('classId') id: string) {
     return this.taskService.getTimeTableByClassID(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtAttand-ClassID/:{classId}')
+  @Get('gtAttand-ClassID/:classId')
   getAttanceByClassID(@Param('classId') id: string) {
     return this.taskService.getAttanceByClassID(id);
   }
@@ -81,14 +81,14 @@ export class TaskController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtwhichTeach-studId/:{studentId}')
+  @Get('gtwhichTeach-studId/:studentId')
   getWhichTeacherByStudentID(@Param('studentId') id: string) {
     return this.taskService.getWhichTeacherByStudentID(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
-  @Get('gtTech-SubID/:{subjectId}')
+  @Get('gtTech-SubID/:subjectId')
   getTeacherBySubjectID(@Param('subjectId') id: string) {
     return this.taskService.getTeacherBySubjectID(id);
   }

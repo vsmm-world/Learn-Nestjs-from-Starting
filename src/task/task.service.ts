@@ -30,7 +30,7 @@ export class TaskService {
     return await this.prisma.teacher
       .findFirst({
         where: { favoriteStudent: id },
-        // include: { user: true },
+        include: { student: true },
       })
       .then((data) => {
         return {
@@ -70,7 +70,7 @@ export class TaskService {
     return await this.prisma.attendance
       .findMany({
         where: { Date: id },
-        // include: { School_class: true, user: true },
+        include: { School_class: true, student: true },
       })
       .then((data) => {
         return {
@@ -92,8 +92,8 @@ export class TaskService {
         where: {
           classId: getAttandanceDTO.ClassId,
           Date: getAttandanceDTO.Date,
-          // },include: { School_class: true, user: true },
-        },
+        },include: { School_class: true, student: true },
+       
       })
       .then((data) => {
         return {
@@ -150,7 +150,7 @@ export class TaskService {
     return await this.prisma.attendance
       .findMany({
         where: { classId: id },
-        // include: { School_class: true, user: true },
+        include: { School_class: true, student: true },
       })
       .then((data) => {
         return {
@@ -210,14 +210,14 @@ export class TaskService {
   //REMAINING -- rv.notes
 
   async getClassByStudentID(id: string) {
-    return await this.prisma.user
+    return await this.prisma.student
       .findFirst({
         where: { id: id },
       })
       .then(async (data) => {
         return await this.prisma.school_class
           .findFirst({
-            // where: { id: data.classId },
+            where: { id: data.classId },
           })
           .then((data) => {
             return {
@@ -244,13 +244,13 @@ export class TaskService {
     return await this.prisma.teacher
       .findFirst({
         where: { id: teacherId },
-        // include: { user: true,subjects:true },
+        include: { student: true,subjects:true },
       })
       .then(async (data) => {
-        return await this.prisma.user
+        return await this.prisma.student
           .findFirst({
             where: { id: data.favoriteStudent },
-            // include: { School_class: true },
+            include: { School_class: true },
           })
           .then((data) => {
             return {
