@@ -16,13 +16,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string }) {
-    if(!payload) throw new UnauthorizedException()
-  return await this.userService.findOne(payload.sub).then((res) => {
-      return res;
-    }
-    ).catch((err) => {
-      throw new UnauthorizedException()
-    })
+  async validate(payload: { sub: string }, req) {
+    if (!payload) throw new UnauthorizedException();
+    return await this.userService
+      .findOne(payload.sub)
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        throw new UnauthorizedException();
+      });
   }
 }

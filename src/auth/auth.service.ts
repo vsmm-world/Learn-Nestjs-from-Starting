@@ -17,11 +17,9 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-
   async logout(req: any) {
     const tk = req.headers.authorization;
     const token = tk.split(' ')[1];
-    console.log(token);
     return await this.prisma.userSession
       .findFirst({
         where: { token, expiresAt: { gte: new Date(Date.now()) } },
